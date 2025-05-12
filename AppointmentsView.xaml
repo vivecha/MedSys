@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="MedicalSystem.Views.AppointmentsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1000">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header and Actions -->
+        <StackPanel Grid.Row="0" Margin="20,20,20,10">
+            <TextBlock Text="Управление приемами" Style="{StaticResource HeaderText}"/>
+
+            <Border Background="White" CornerRadius="5" Padding="10" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Добавить прием" Style="{StaticResource ActionButton}" 
+                            Margin="10,0,0,0" Click="AddAppointment_Click"/>
+                    <Button x:Name="EditButton" Content="Редактировать" Style="{StaticResource SecondaryButton}" 
+                            Margin="10,0,0,0" Click="EditAppointment_Click" IsEnabled="False"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- Tab Control -->
+        <TabControl Grid.Row="1" Margin="20,0,20,20">
+            <!-- Прошедшие приемы -->
+            <TabItem Header="Приемы">
+                <Border Background="White" CornerRadius="5" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                    <DataGrid x:Name="PastAppointmentsGrid" Style="{StaticResource DataGridStyle}"
+                              ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
+                              AutoGenerateColumns="False" SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding AppointmentId}" Width="Auto"/>
+                            <DataGridTextColumn Header="Пациент" Binding="{Binding PatientName}" Width="*"/>
+                            <DataGridTextColumn Header="Врач" Binding="{Binding DoctorName}" Width="*"/>
+                            <DataGridTextColumn Header="Дата приема" Binding="{Binding AppointmentDate, StringFormat=dd.MM.yyyy HH:mm}" Width="Auto"/>
+                            <DataGridTemplateColumn Header="Больничный лист" Width="Auto">
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </TabItem>
+
+            <!-- Предстоящие приемы -->
+            <TabItem Header="Предстоящие">
+                <Border Background="White" CornerRadius="5" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                    <DataGrid x:Name="UpcomingAppointmentsGrid" Style="{StaticResource DataGridStyle}"
+                              ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
+                              AutoGenerateColumns="False" SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding AppointmentId}" Width="Auto"/>
+                            <DataGridTextColumn Header="Пациент" Binding="{Binding PatientName}" Width="*"/>
+                            <DataGridTextColumn Header="Дата приема" Binding="{Binding AppointmentDate, StringFormat=dd.MM.yyyy HH:mm}" Width="Auto"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

@@ -1,0 +1,229 @@
+﻿<Window x:Class="MedicalSystem.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Медицинская система - Управление больничными листами" 
+        Height="700" Width="1100"
+        WindowStartupLocation="CenterScreen"
+        Background="#FFF9F9F9">
+
+    <Grid>
+        <!-- Main layout grid -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Navigation Panel (Left) -->
+        <Border x:Name="NavPanel" Grid.Column="0" Width="60" Background="#FF008080"
+                MouseEnter="NavPanel_MouseEnter" MouseLeave="NavPanel_MouseLeave">
+            <StackPanel Orientation="Vertical" Margin="0,20,0,0">
+
+                <!-- Home Button -->
+                <Button x:Name="BtnHome" Style="{StaticResource NavButton}" 
+                        Tag="HomeView" Click="NavigateToView">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+
+                        <TextBlock x:Name="BtnHomeText" Text="Главная" Style="{StaticResource NavButtonText}"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Patients Button -->
+                <Button x:Name="BtnPatients" Style="{StaticResource NavButton}" 
+                        Tag="PatientsView" Click="NavigateToView">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+
+                        <TextBlock x:Name="BtnPatientsText" Text="Пациенты" Style="{StaticResource NavButtonText}"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Doctors Button -->
+                <Button x:Name="BtnDoctors" Style="{StaticResource NavButton}" 
+                        Tag="DoctorsView" Click="NavigateToView">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+
+                        <TextBlock x:Name="BtnDoctorsText" Text="Врачи" Style="{StaticResource NavButtonText}"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- Sick Leaves Button -->
+                <Button x:Name="BtnSickLeaves" Style="{StaticResource NavButton}" 
+                        Tag="SickLeavesView" Click="NavigateToView">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+
+                        <TextBlock x:Name="BtnSickLeavesText" Text="Больничные" Style="{StaticResource NavButtonText}"/>
+                    </StackPanel>
+                </Button>
+
+                <Button x:Name="BtnAppointments" Style="{StaticResource NavButton}" 
+                        Tag="AppointmentsView" Click="NavigateToView">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+
+                        <TextBlock x:Name="BtnAppointmentsText" Text="Приёмы" Style="{StaticResource NavButtonText}"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content Area -->
+        <Border Grid.Column="1" Background="White" CornerRadius="5" Margin="5">
+            <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+        </Border>
+
+        <!-- Status Bar -->
+        <StatusBar Grid.Column="1" VerticalAlignment="Bottom" Background="#FFE0F7FA">
+            <!-- Левая часть -->
+            <StatusBarItem>
+                <TextBlock x:Name="StatusText" Text="Главная" VerticalAlignment="Center"/>
+            </StatusBarItem>
+            <Separator/>
+
+            <!-- Центральная часть -->
+            <StatusBarItem>
+                <TextBlock x:Name="UserInfoText" Text="Пользователь: " VerticalAlignment="Center"/>
+            </StatusBarItem>
+            <Separator/>
+
+            <!-- Правая часть с кнопкой -->
+            <StatusBarItem HorizontalAlignment="Right" VerticalContentAlignment="Stretch">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="DateTimeText" Margin="0,0,10,0"/>
+                    <Button x:Name="BtnConnection" 
+                    Content="Проверить подключение"
+                    Style="{StaticResource StatusBarButton}"
+                    Click="TestConnection_Click"
+                    VerticalAlignment="Stretch"/>
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+
+    <Window.Resources>
+        <!-- Styles -->
+        <Style x:Key="NavButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="3" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF006666"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="NavButtonText" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,5,0,0"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+        </Style>
+
+        <Style x:Key="HeaderText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#FF008080"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+
+        <Style x:Key="DataGridStyle" TargetType="DataGrid">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#FFDDDDDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="RowBackground" Value="White"/>
+            <Setter Property="AlternatingRowBackground" Value="#FFF5F5F5"/>
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        </Style>
+
+        <Style x:Key="DataGridColumnHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#FF008080"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Background" Value="#FF008080"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF006666"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SecondaryButton" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#FF008080"/>
+            <Setter Property="BorderBrush" Value="#FF008080"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FFE0F7FA"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="FormLabel" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,5,0,2"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="#FF555555"/>
+        </Style>
+
+        <Style x:Key="FormTextBox" TargetType="TextBox">
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderBrush" Value="#FFCCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style x:Key="FormComboBox" TargetType="ComboBox">
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderBrush" Value="#FFCCCCCC"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style x:Key="FormDatePicker" TargetType="DatePicker">
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="BorderBrush" Value="#FFCCCCCC"/>
+        </Style>
+    </Window.Resources>
+</Window>

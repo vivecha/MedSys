@@ -1,0 +1,51 @@
+﻿<Window x:Class="MedicalSystem.Views.EditAppointmentWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Редактирование приема" 
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Детали приема -->
+        <TextBlock Text="Детали приема" Style="{StaticResource HeaderText}" Grid.Row="0" Margin="0,0,0,10"/>
+
+        <StackPanel Grid.Row="1">
+            <!-- Пациент -->
+            <TextBlock Text="Пациент:"/>
+            <ComboBox x:Name="PatientComboBox"/>
+
+            <!-- Врач -->
+            <TextBlock Text="Врач:"  Margin="0,10,0,0"/>
+            <ComboBox x:Name="DoctorComboBox"/>
+
+            <!-- Дата и время приема -->
+            <TextBlock Text="Дата приема:" Margin="0,10,0,0"/>
+            <DatePicker x:Name="AppointmentDatePicker"/>
+
+            <!-- Жалобы -->
+            <TextBlock Text="Жалобы:" Margin="0,10,0,0"/>
+            <TextBox x:Name="ComplaintsTextBox" AcceptsReturn="True" Height="50"/>
+
+            <!-- Диагноз -->
+            <TextBlock Text="Диагноз:"  Margin="0,10,0,0"/>
+            <TextBox x:Name="DiagnosisTextBox" AcceptsReturn="True" Height="50"/>
+
+            <!-- Лечение -->
+            <TextBlock Text="Лечение:"  Margin="0,10,0,0"/>
+            <TextBox x:Name="TreatmentTextBox" AcceptsReturn="True" Height="50"/>
+        </StackPanel>
+
+        <!-- Кнопки -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="Сохранить" Click="SaveButton_Click" Margin="0,0,10,0"/>
+            <Button Content="Отмена" Style="{StaticResource SecondaryButton}" Click="CancelButton_Click" Margin="0,0,10,0"/>
+        </StackPanel>
+    </Grid>
+</Window>
