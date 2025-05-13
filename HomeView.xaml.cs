@@ -22,20 +22,16 @@ namespace MedicalSystem.Views
             {
                 using (var connection = DatabaseHelper.GetConnection())
                 {
-                    // Загрузка количества пациентов
                     string patientsQuery = "SELECT COUNT(*) FROM patients";
                     PatientsCount.Text = ExecuteScalarQuery(connection, patientsQuery).ToString();
 
-                    // Загрузка количества врачей
                     string doctorsQuery = "SELECT COUNT(*) FROM doctors";
                     DoctorsCount.Text = ExecuteScalarQuery(connection, doctorsQuery).ToString();
 
-                    // Загрузка количества приемов на сегодня
                     string appointmentsQuery = @"SELECT COUNT(*) FROM appointments 
                                               WHERE DATE(appointment_date) = CURDATE()";
                     AppointmentsCount.Text = ExecuteScalarQuery(connection, appointmentsQuery).ToString();
 
-                    // Загрузка количества активных больничных
                     string sickLeavesQuery = "SELECT COUNT(*) FROM sickleaves WHERE closed_date IS NULL";
                     SickLeavesCount.Text = ExecuteScalarQuery(connection, sickLeavesQuery).ToString();
                 }
@@ -126,7 +122,6 @@ namespace MedicalSystem.Views
             mainWindow?.NavigateToView("SickLeavesView");
         }
 
-        // Обработчики для кнопок быстрых действий
         private void CreateSickLeave_Click(object sender, RoutedEventArgs e)
         {
             var mainWindow = Window.GetWindow(this) as MainWindow;
