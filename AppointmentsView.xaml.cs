@@ -27,16 +27,17 @@ namespace MedicalSystem.Views
                 {
                     // Загрузка прошедших приемов
                     string pastQuery = @"SELECT a.appointment_id, a.appointment_date, 
-                                       CONCAT(p.last_name, ' ', LEFT(p.first_name, 1), '. ', LEFT(p.middle_name, 1), '.') as patient_name,
-                                       CONCAT(d.last_name, ' ', LEFT(d.first_name, 1), '. ', LEFT(d.middle_name, 1), '.') as doctor_name,
-                                       sl.sick_leave_id IS NOT NULL as has_sick_leave, sl.sick_leave_id
-                                       FROM appointments a
-                                       JOIN users p ON a.patient_id = p.user_id
-                                       JOIN doctors doc ON a.doctor_id = doc.doctor_id
-                                       JOIN users d ON doc.user_id = d.user_id
-                                       LEFT JOIN sickleaves sl ON a.appointment_id = sl.appointment_id
-                                       WHERE a.appointment_date < NOW()
-                                       ORDER BY a.appointment_date DESC";
+                               CONCAT(p.last_name, ' ', LEFT(p.first_name, 1), '. ', LEFT(p.middle_name, 1), '.') as patient_name,
+                               CONCAT(e.last_name, ' ', LEFT(e.first_name, 1), '. ', LEFT(e.middle_name, 1), '.') as doctor_name,
+                               sl.sick_leave_id IS NOT NULL as has_sick_leave, sl.sick_leave_id
+                               FROM appointments a
+                               JOIN patients p ON p.patient_id = a.patient_id
+                               JOIN doctors d ON a.doctor_id = d.doctor_id
+                               JOIN users u on d.user_id = u.user_id
+                               JOIN employees e ON u.employee_id = e.employee_id
+                               LEFT JOIN sickleaves sl ON a.appointment_id = sl.appointment_id
+                               WHERE a.appointment_date < NOW()
+                               ORDER BY a.appointment_date DESC";
 
                     var pastAppointments = new List<Appointment>();
                     using (var command = new MySqlCommand(pastQuery, connection))
@@ -60,12 +61,12 @@ namespace MedicalSystem.Views
                     PastAppointmentsGrid.ItemsSource = pastAppointments;
 
                     // Загрузка предстоящих приемов
-                    string upcomingQuery = @"SELECT a.appointment_id, a.appointment_date, 
-                                           CONCAT(p.last_name, ' ', LEFT(p.first_name, 1), '. ', LEFT(p.middle_name, 1), '.') as patient_name
-                                           FROM appointments a
-                                           JOIN users p ON a.patient_id = p.user_id
-                                           WHERE a.appointment_date >= NOW()
-                                           ORDER BY a.appointment_date";
+                    string upcomingQuery = @"SELECT a.appointment_id, a.appointment_date,
+                                            CONCAT(p.last_name, ' ', LEFT(p.first_name, 1), '. ', LEFT(p.middle_name, 1), '.') as patient_name
+                                            FROM appointments a
+                                            JOIN patients p ON p.patient_id = a.patient_id
+                                            WHERE a.appointment_date >= NOW()
+                                            ORDER BY a.appointment_date";
 
                     var upcomingAppointments = new List<Appointment>();
                     using (var command = new MySqlCommand(upcomingQuery, connection))
@@ -111,15 +112,6 @@ namespace MedicalSystem.Views
                 {
                     LoadAppointments();
                 }
-            }
-        }
-
-        private void ViewSickLeave_Click(object sender, RoutedEventArgs e)
-        {
-            if (((Button)sender).Tag is int sickLeaveId)
-            {
-                var viewWindow = new SickLeaveWindow(sickLeaveId);
-                viewWindow.ShowDialog();
             }
         }
     }

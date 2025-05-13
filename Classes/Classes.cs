@@ -26,14 +26,20 @@ namespace MedicalSystem.Classes
     {
         public int DoctorId { get; set; }
         public int UserId { get; set; }
+        public int SpecialtyId { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
+        public DateTime DateOfBirth { get; set; }
         public string Email { get; set; }
+        public string PhoneNumber { get; set; }
+        public DateTime HireDate { get; set; } 
+        public DateTime? FireDate { get; set; }
         public string Username { get; set; }
+        public string Password { get; set; }
         public string SpecialtyName { get; set; }
-        public int SpecialtyId { get; set; }
     }
+
 
     public class Appointment
     {

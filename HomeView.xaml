@@ -66,7 +66,7 @@
             </Border>
 
             <!-- Recent Activity -->
-            <TextBlock Text="Последние больничные листы" Style="{StaticResource HeaderText}"/>
+            <TextBlock Text="Активные больничные листы" Style="{StaticResource HeaderText}"/>
             <DataGrid x:Name="RecentSickLeavesGrid" Style="{StaticResource DataGridStyle}" 
                       ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
                       Height="250" AutoGenerateColumns="False">
@@ -74,9 +74,8 @@
                     <DataGridTextColumn Header="Номер" Binding="{Binding SickLeaveId}" Width="Auto"/>
                     <DataGridTextColumn Header="Пациент" Binding="{Binding PatientName}" Width="*"/>
                     <DataGridTextColumn Header="Врач" Binding="{Binding DoctorName}" Width="*"/>
-                    <DataGridTextColumn Header="Дата выдачи" Binding="{Binding IssueDate, StringFormat=d}" Width="Auto"/>
-                    <DataGridTextColumn Header="Период" Binding="{Binding Period}" Width="Auto"/>
-                    <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="Auto"/>
+                    <DataGridTextColumn Header="Дата выдачи" Binding="{Binding start_date, StringFormat=d}" Width="Auto"/>
+                    <DataGridTextColumn Header="Телефон" Binding="{Binding phone_number}" Width="Auto"/>
                 </DataGrid.Columns>
             </DataGrid>
 

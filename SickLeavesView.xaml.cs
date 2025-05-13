@@ -24,14 +24,15 @@ namespace MedicalSystem.Views
                 using (var connection = DatabaseHelper.GetConnection())
                 {
                     string baseQuery = @"SELECT sl.sick_leave_id, 
-                                       CONCAT(p.last_name, ' ', p.first_name, ' ', IFNULL(p.middle_name, '')) as patient_name,
-                                       CONCAT(d.last_name, ' ', d.first_name, ' ', IFNULL(d.middle_name, '')) as doctor_name,
-                                       sl.issue_date, sl.start_date, sl.end_date, sl.closed_date,
-                                       CASE WHEN sl.closed_date IS NULL THEN 'Активный' ELSE 'Закрытый' END as status
-                                       FROM sickleaves sl
-                                       JOIN users p ON sl.patient_id = p.user_id
-                                       JOIN doctors doc ON sl.doctor_id = doc.doctor_id
-                                       JOIN users d ON doc.user_id = d.user_id";
+                                   CONCAT(p.last_name, ' ', p.first_name, ' ', IFNULL(p.middle_name, '')) as patient_name,
+                                   CONCAT(e.last_name, ' ', e.first_name, ' ', IFNULL(e.middle_name, '')) as doctor_name,
+                                   sl.issue_date, sl.start_date, sl.end_date, sl.closed_date,
+                                   CASE WHEN sl.closed_date IS NULL THEN 'Активный' ELSE 'Закрытый' END as status
+                                   FROM sickleaves sl
+                                   JOIN patients p ON sl.patient_id = p.patient_id
+                                   JOIN doctors d ON sl.doctor_id = d.doctor_id
+                                   JOIN users u ON d.user_id = u.user_id
+                                   JOIN employees e ON u.employee_id = e.employee_id";
 
                     string fullQuery = baseQuery + filterQuery + " ORDER BY sl.start_date DESC";
 
@@ -72,8 +73,8 @@ namespace MedicalSystem.Views
                 using (var connection = DatabaseHelper.GetConnection())
                 {
                     string patientsQuery = @"SELECT patient_id, CONCAT(last_name, ' ', first_name, ' ', 
-                                           IFNULL(middle_name, '')) as full_name 
-                                           FROM patients";
+                                       IFNULL(middle_name, '')) as full_name 
+                                       FROM patients";
                     var patients = new List<PatientItem>();
                     using (var command = new MySqlCommand(patientsQuery, connection))
                     {
@@ -91,10 +92,11 @@ namespace MedicalSystem.Views
                     }
                     PatientFilter.ItemsSource = patients;
 
-                    string doctorsQuery = @"SELECT doc.doctor_id, CONCAT(u.last_name, ' ', u.first_name, ' ', 
-                                          IFNULL(u.middle_name, '')) as full_name
-                                          FROM doctors doc
-                                          JOIN users u ON doc.user_id = u.user_id";
+                    string doctorsQuery = @"SELECT d.doctor_id, CONCAT(e.last_name, ' ', e.first_name, ' ', 
+                                      IFNULL(e.middle_name, '')) as full_name
+                                      FROM doctors d
+                                      JOIN users u ON d.user_id = u.user_id
+                                      JOIN employees e ON u.employee_id = e.employee_id";
                     var doctors = new List<DoctorItem>();
                     using (var command = new MySqlCommand(doctorsQuery, connection))
                     {
@@ -204,9 +206,10 @@ namespace MedicalSystem.Views
                 {
                     using (var connection = DatabaseHelper.GetConnection())
                     {
-                        string query = "UPDATE sickleaves SET closed_date = NOW() WHERE sick_leave_id = @sickLeaveId";
+                        string query = "UPDATE sickleaves SET closed_date = @closedDate WHERE sick_leave_id = @sickLeaveId";
                         using (var command = new MySqlCommand(query, connection))
                         {
+                            command.Parameters.AddWithValue("@closedDate", DateTime.Today);
                             command.Parameters.AddWithValue("@sickLeaveId", selected.SickLeaveId);
                             command.ExecuteNonQuery();
                         }
@@ -214,7 +217,7 @@ namespace MedicalSystem.Views
 
                     MessageBox.Show("Больничный лист успешно закрыт", "Успех",
                                   MessageBoxButton.OK, MessageBoxImage.Information);
-                    LoadSickLeaves();
+                    LoadSickLeaves(); // Обновляем список больничных листов
                 }
                 catch (Exception ex)
                 {

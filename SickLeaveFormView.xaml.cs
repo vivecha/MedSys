@@ -33,8 +33,8 @@ namespace MedicalSystem.Views
                 {
                     _patients = new List<PatientItem>();
                     string patientsQuery = @"SELECT patient_id, CONCAT(last_name, ' ', first_name, ' ', 
-                                           IFNULL(middle_name, '')) as full_name 
-                                           FROM patients"; // Пациенты
+                                       IFNULL(middle_name, '')) as full_name 
+                                       FROM patients";
                     using (var command = new MySqlCommand(patientsQuery, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -52,11 +52,11 @@ namespace MedicalSystem.Views
                     PatientComboBox.ItemsSource = _patients;
 
                     _doctors = new List<DoctorItem>();
-                    string doctorsQuery = @"SELECT d.doctor_id, CONCAT(u.last_name, ' ', u.first_name, ' ', 
-                                           IFNULL(u.middle_name, '')) as full_name, ds.specialty_name
-                                           FROM doctors d
-                                           JOIN users u ON d.user_id = u.user_id
-                                           JOIN doctorspecialties ds ON d.specialty_id = ds.specialty_id";
+                    string doctorsQuery = @"SELECT d.doctor_id, CONCAT(e.last_name, ' ', e.first_name, ' ', 
+                                       IFNULL(e.middle_name, '')) as full_name, ds.specialty_name
+                                       FROM doctors d
+                                       JOIN employees e ON d.employee_id = e.employee_id
+                                       JOIN doctorspecialties ds ON d.specialty_id = ds.specialty_id";
                     using (var command = new MySqlCommand(doctorsQuery, connection))
                     {
                         using (var reader = command.ExecuteReader())
@@ -76,10 +76,10 @@ namespace MedicalSystem.Views
 
                     _appointments = new List<AppointmentItem>();
                     string appointmentsQuery = @"SELECT a.appointment_id, a.appointment_date, 
-                                               CONCAT(u.last_name, ' ', u.first_name) as patient_name
-                                               FROM appointments a
-                                               JOIN users u ON a.patient_id = u.user_id
-                                               ORDER BY a.appointment_date DESC";
+                                           CONCAT(p.last_name, ' ', p.first_name) as patient_name
+                                           FROM appointments a
+                                           JOIN patients p ON a.patient_id = p.patient_id
+                                           ORDER BY a.appointment_date DESC";
                     using (var command = new MySqlCommand(appointmentsQuery, connection))
                     {
                         using (var reader = command.ExecuteReader())

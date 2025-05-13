@@ -25,9 +25,9 @@ namespace MedicalSystem.Views
                 using (var connection = DatabaseHelper.GetConnection())
                 {
                     // Загрузка пациентов
-                    string patientsQuery = @"SELECT patient_id, 
-                                  CONCAT(last_name, ' ', LEFT(first_name, 1), '. ', LEFT(middle_name, 1), '.') as full_name
-                                  FROM patients";
+                    string patientsQuery = @"SELECT p.patient_id, 
+                                      CONCAT(p.last_name, ' ', LEFT(p.first_name, 1), '. ', LEFT(p.middle_name, 1), '.') as full_name
+                                      FROM patients p";
 
                     var patients = new List<KeyValuePair<int, string>>();
                     using (var command = new MySqlCommand(patientsQuery, connection))
@@ -46,9 +46,10 @@ namespace MedicalSystem.Views
 
                     // Загрузка врачей
                     string doctorsQuery = @"SELECT doc.doctor_id, 
-                                  CONCAT(u.last_name, ' ', LEFT(u.first_name, 1), '. ', LEFT(u.middle_name, 1), '.') as full_name
-                                  FROM doctors doc
-                                  JOIN users u ON doc.user_id = u.user_id";
+                                      CONCAT(e.last_name, ' ', LEFT(e.first_name, 1), '. ', LEFT(e.middle_name, 1), '.') as full_name
+                                      FROM doctors doc
+                                      JOIN users u ON doc.user_id = u.user_id
+                                      JOIN employees e ON u.employee_id = e.employee_id";
 
                     var doctors = new List<KeyValuePair<int, string>>();
                     using (var command = new MySqlCommand(doctorsQuery, connection))
@@ -96,6 +97,7 @@ namespace MedicalSystem.Views
                               MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)

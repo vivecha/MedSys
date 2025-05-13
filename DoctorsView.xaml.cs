@@ -26,11 +26,12 @@ namespace MedicalSystem.Views
                 using (var connection = DatabaseHelper.GetConnection())
                 {
                     string query = @"SELECT d.doctor_id, d.user_id, d.specialty_id, 
-                                   u.last_name, u.first_name, u.middle_name, u.email,
-                                   ds.specialty_name
-                                   FROM doctors d
-                                   JOIN users u ON d.user_id = u.user_id
-                                   JOIN doctorspecialties ds ON d.specialty_id = ds.specialty_id";
+                           e.last_name, e.first_name, e.middle_name, e.email,
+                           ds.specialty_name
+                           FROM doctors d
+                           JOIN users u ON d.user_id = u.user_id
+                           JOIN employees e ON u.employee_id = e.employee_id
+                           JOIN doctorspecialties ds ON d.specialty_id = ds.specialty_id";
 
                     _allDoctors = new List<Doctor>();
 
@@ -64,6 +65,7 @@ namespace MedicalSystem.Views
                               MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
         private void SearchDoctors_Click(object sender, RoutedEventArgs e)
         {

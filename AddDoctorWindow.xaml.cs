@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Windows;
 using System.Windows.Controls;
+using System.Xml;
 
 namespace MedicalSystem.Views
 {
@@ -58,6 +59,17 @@ namespace MedicalSystem.Views
             DataContext = this;
         }
 
+        private string _password;
+        public string Password
+        {
+            get => _password;
+            set
+            {
+                _password = value;
+                OnPropertyChanged(nameof(Password));
+            }
+        }
+
         private void LoadSpecialties()
         {
             try
@@ -99,11 +111,12 @@ namespace MedicalSystem.Views
                 using (var connection = DatabaseHelper.GetConnection())
                 {
                     string query = @"SELECT d.doctor_id, d.specialty_id, 
-                                   u.user_id, u.username, u.first_name, u.last_name, 
-                                   u.middle_name, u.email
-                                   FROM doctors d
-                                   JOIN users u ON d.user_id = u.user_id
-                                   WHERE d.doctor_id = @doctorId";
+                           u.user_id, u.username, e.first_name, e.last_name, 
+                           e.middle_name, e.email
+                           FROM doctors d
+                           JOIN users u ON d.user_id = u.user_id
+                           JOIN employees e ON u.employee_id = e.employee_id
+                           WHERE d.doctor_id = @doctorId";
 
                     using (var command = new MySqlCommand(query, connection))
                     {
@@ -161,24 +174,36 @@ namespace MedicalSystem.Views
                     {
                         try
                         {
+                            Password = PasswordBox.Password;
                             if (_isEditMode)
                             {
-                                // Обновление пользователя
-                                string updateUserQuery = @"UPDATE users SET 
-                                                        first_name = @firstName,
-                                                        last_name = @lastName,
-                                                        middle_name = @middleName,
-                                                        email = @email,
-                                                        username = @username
-                                                        WHERE user_id = @userId";
+                                // Обновление сотрудника
+                                string updateEmployeeQuery = @"UPDATE employees SET 
+                                                    first_name = @firstName,
+                                                    last_name = @lastName,
+                                                    middle_name = @middleName,
+                                                    email = @email
+                                                    WHERE employee_id = (SELECT employee_id FROM users WHERE user_id = @userId)";
 
-                                using (var command = new MySqlCommand(updateUserQuery, connection, transaction))
+                                using (var command = new MySqlCommand(updateEmployeeQuery, connection, transaction))
                                 {
                                     command.Parameters.AddWithValue("@firstName", CurrentDoctor.FirstName);
                                     command.Parameters.AddWithValue("@lastName", CurrentDoctor.LastName);
                                     command.Parameters.AddWithValue("@middleName",
                                         string.IsNullOrWhiteSpace(CurrentDoctor.MiddleName) ? DBNull.Value : (object)CurrentDoctor.MiddleName);
                                     command.Parameters.AddWithValue("@email", CurrentDoctor.Email);
+                                    command.Parameters.AddWithValue("@userId", CurrentDoctor.UserId);
+
+                                    command.ExecuteNonQuery();
+                                }
+
+                                // Обновление пользователя
+                                string updateUserQuery = @"UPDATE users SET 
+                                                username = @username
+                                                WHERE user_id = @userId";
+
+                                using (var command = new MySqlCommand(updateUserQuery, connection, transaction))
+                                {
                                     command.Parameters.AddWithValue("@username", CurrentDoctor.Username);
                                     command.Parameters.AddWithValue("@userId", CurrentDoctor.UserId);
 
@@ -187,8 +212,8 @@ namespace MedicalSystem.Views
 
                                 // Обновление врача
                                 string updateDoctorQuery = @"UPDATE doctors SET 
-                                                          specialty_id = @specialtyId
-                                                          WHERE doctor_id = @doctorId";
+                                                  specialty_id = @specialtyId
+                                                  WHERE doctor_id = @doctorId";
 
                                 using (var command = new MySqlCommand(updateDoctorQuery, connection, transaction))
                                 {
@@ -200,39 +225,77 @@ namespace MedicalSystem.Views
                             }
                             else
                             {
-                                // Добавление пользователя
-                                string insertUserQuery = @"INSERT INTO users 
-                                                        (first_name, last_name, middle_name, email, username, password, role_id)
-                                                        VALUES (@firstName, @lastName, @middleName, @email, @username, @password, 2)";
+                                string getMaxDoctorIdQuery = "SELECT MAX(doctor_id) FROM doctors";
+                                int newDoctorId = 1; 
 
-                                int newUserId;
+                                using (var command = new MySqlCommand(getMaxDoctorIdQuery, connection, transaction))
+                                {
+                                    var result = command.ExecuteScalar();
+                                    if (result != null && result != DBNull.Value)
+                                    {
+                                        newDoctorId = Convert.ToInt32(result) + 1;
+                                    }
+                                }
 
-                                using (var command = new MySqlCommand(insertUserQuery, connection, transaction))
+                                // Добавление сотрудника
+                                string insertEmployeeQuery = @"INSERT INTO employees 
+                                                               (first_name, last_name, middle_name, date_of_birth, email, hire_date, fire_date, position_id, phone_number)
+                                                               VALUES (@firstName, @lastName, @middleName, @dateOfBirth, @email, @hireDate, @fireDate, @positionId, @phoneNumber)";
+
+                                int newEmployeeId;
+
+                                using (var command = new MySqlCommand(insertEmployeeQuery, connection, transaction))
                                 {
                                     command.Parameters.AddWithValue("@firstName", CurrentDoctor.FirstName);
                                     command.Parameters.AddWithValue("@lastName", CurrentDoctor.LastName);
                                     command.Parameters.AddWithValue("@middleName",
                                         string.IsNullOrWhiteSpace(CurrentDoctor.MiddleName) ? DBNull.Value : (object)CurrentDoctor.MiddleName);
+                                    command.Parameters.AddWithValue("@dateOfBirth", BirthDatePicker.SelectedDate);
                                     command.Parameters.AddWithValue("@email", CurrentDoctor.Email);
+                                    command.Parameters.AddWithValue("@hireDate", HireDatePicker.SelectedDate);
+                                    command.Parameters.AddWithValue("@fireDate",
+                                        CurrentDoctor.FireDate.HasValue ? (object)CurrentDoctor.FireDate.Value : DBNull.Value);
+                                    command.Parameters.AddWithValue("@positionId", 2);
+                                    command.Parameters.AddWithValue("@phoneNumber", CurrentDoctor.PhoneNumber);
+
+                                    command.ExecuteNonQuery();
+                                    newEmployeeId = (int)command.LastInsertedId;
+                                }
+
+                                // Добавление пользователя
+                                string insertUserQuery = @"INSERT INTO users 
+                                                            (employee_id, username, password, role_id)
+                                                            VALUES (@employeeId, @username, @password, 2)";
+
+                                int newUserId;
+
+                                using (var command = new MySqlCommand(insertUserQuery, connection, transaction))
+                                {
+                                    command.Parameters.AddWithValue("@employeeId", newEmployeeId);
                                     command.Parameters.AddWithValue("@username", CurrentDoctor.Username);
+                                    command.Parameters.AddWithValue("@password", "defaultPassword"); 
 
                                     command.ExecuteNonQuery();
                                     newUserId = (int)command.LastInsertedId;
                                 }
 
+
                                 // Добавление врача
                                 string insertDoctorQuery = @"INSERT INTO doctors 
-                                                          (user_id, specialty_id)
-                                                          VALUES (@userId, @specialtyId)";
+                                                             (doctor_id, user_id, specialty_id)
+                                                             VALUES (@doctorId, @userId, @specialtyId)";
 
                                 using (var command = new MySqlCommand(insertDoctorQuery, connection, transaction))
                                 {
+                                    command.Parameters.AddWithValue("@doctorId", newDoctorId); // Используем сгенерированный doctor_id
                                     command.Parameters.AddWithValue("@userId", newUserId);
                                     command.Parameters.AddWithValue("@specialtyId", CurrentDoctor.SpecialtyId);
 
                                     command.ExecuteNonQuery();
                                 }
                             }
+
+
 
                             transaction.Commit();
                             MessageBox.Show("Данные врача успешно сохранены", "Успех",
