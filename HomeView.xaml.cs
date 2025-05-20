@@ -122,7 +122,6 @@ namespace MedicalSystem.Views
             mainWindow?.NavigateToView("SickLeavesView");
         }
 
-        // Обработчики для кнопок быстрых действий
         private void CreateSickLeave_Click(object sender, RoutedEventArgs e)
         {
             var mainWindow = Window.GetWindow(this) as MainWindow;
