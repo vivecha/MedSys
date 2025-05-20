@@ -55,7 +55,8 @@ namespace MedicalSystem.Views
                     string doctorsQuery = @"SELECT d.doctor_id, CONCAT(e.last_name, ' ', e.first_name, ' ', 
                                        IFNULL(e.middle_name, '')) as full_name, ds.specialty_name
                                        FROM doctors d
-                                       JOIN employees e ON d.employee_id = e.employee_id
+                                       JOIN users u ON d.doctor_id = u.user_id
+                                       JOIN employees e ON u.employee_id = e.employee_id
                                        JOIN doctorspecialties ds ON d.specialty_id = ds.specialty_id";
                     using (var command = new MySqlCommand(doctorsQuery, connection))
                     {

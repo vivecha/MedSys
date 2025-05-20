@@ -80,10 +80,9 @@
                       ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
                       AutoGenerateColumns="False" SelectionMode="Single">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Номер" Binding="{Binding SickLeaveId}" Width="Auto"/>
+                    <DataGridTextColumn Header="ID" Binding="{Binding SickLeaveId}" Width="Auto"/>
                     <DataGridTextColumn Header="Пациент" Binding="{Binding PatientName}" Width="*"/>
                     <DataGridTextColumn Header="Врач" Binding="{Binding DoctorName}" Width="*"/>
-                    <DataGridTextColumn Header="Дата приема" Binding="{Binding IssueDate, StringFormat=d}" Width="Auto"/>
                     <DataGridTextColumn Header="Начало" Binding="{Binding StartDate, StringFormat=d}" Width="Auto"/>
                     <DataGridTextColumn Header="Окончание" Binding="{Binding EndDate, StringFormat=d}" Width="Auto"/>
                     <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="Auto"/>

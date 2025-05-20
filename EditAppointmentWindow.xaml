@@ -18,33 +18,33 @@
 
         <StackPanel Grid.Row="1">
             <!-- Пациент -->
-            <TextBlock Text="Пациент:"/>
+            <TextBlock Text="Пациент:" Style="{StaticResource FormLabel}"/>
             <ComboBox x:Name="PatientComboBox"/>
 
             <!-- Врач -->
-            <TextBlock Text="Врач:"  Margin="0,10,0,0"/>
+            <TextBlock Text="Врач:"  Margin="0,10,0,0" Style="{StaticResource FormLabel}"/>
             <ComboBox x:Name="DoctorComboBox"/>
 
             <!-- Дата и время приема -->
-            <TextBlock Text="Дата приема:" Margin="0,10,0,0"/>
-            <DatePicker x:Name="AppointmentDatePicker"/>
+            <TextBlock Text="Дата приема:" Margin="0,10,0,0" Style="{StaticResource FormLabel}"/>
+            <DatePicker x:Name="AppointmentDatePicker" Style="{StaticResource FormDatePicker}"/>
 
             <!-- Жалобы -->
-            <TextBlock Text="Жалобы:" Margin="0,10,0,0"/>
+            <TextBlock Text="Жалобы:" Margin="0,10,0,0" Style="{StaticResource FormLabel}"/>
             <TextBox x:Name="ComplaintsTextBox" AcceptsReturn="True" Height="50"/>
 
             <!-- Диагноз -->
-            <TextBlock Text="Диагноз:"  Margin="0,10,0,0"/>
+            <TextBlock Text="Диагноз:"  Margin="0,10,0,0" Style="{StaticResource FormLabel}"/>
             <TextBox x:Name="DiagnosisTextBox" AcceptsReturn="True" Height="50"/>
 
             <!-- Лечение -->
-            <TextBlock Text="Лечение:"  Margin="0,10,0,0"/>
+            <TextBlock Text="Лечение:"  Margin="0,10,0,0" Style="{StaticResource FormLabel}"/>
             <TextBox x:Name="TreatmentTextBox" AcceptsReturn="True" Height="50"/>
         </StackPanel>
 
         <!-- Кнопки -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <Button Content="Сохранить" Click="SaveButton_Click" Margin="0,0,10,0"/>
+            <Button Content="Сохранить" Style="{StaticResource ActionButton}" Click="SaveButton_Click" Margin="0,0,10,0"/>
             <Button Content="Отмена" Style="{StaticResource SecondaryButton}" Click="CancelButton_Click" Margin="0,0,10,0"/>
         </StackPanel>
     </Grid>

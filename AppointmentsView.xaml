@@ -9,6 +9,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -17,28 +18,51 @@
             <TextBlock Text="Управление приемами" Style="{StaticResource HeaderText}"/>
 
             <Border Background="White" CornerRadius="5" Padding="10" BorderBrush="#FFDDDDDD" BorderThickness="1">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Добавить прием" Style="{StaticResource ActionButton}" 
-                            Margin="10,0,0,0" Click="AddAppointment_Click"/>
-                    <Button x:Name="EditButton" Content="Редактировать" Style="{StaticResource SecondaryButton}" 
-                            Margin="10,0,0,0" Click="EditAppointment_Click" IsEnabled="False"/>
-                </StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox x:Name="SearchTextBox" Width="200" Margin="0,0,10,0" VerticalAlignment="Center" Tag="Поиск по пациенту..."
+                                Style="{StaticResource FormTextBox}" Height="30"/>
+                        <DatePicker x:Name="DateFilterPicker" Width="196" Margin="0,0,10,0"
+                                VerticalAlignment="Center" SelectedDateFormat="Short" DisplayDate="{Binding Today}" IsTodayHighlighted="True" 
+                                Style="{StaticResource FormDatePicker}"/>
+                        <Button Content="Поиск" Style="{StaticResource ActionButton}" Margin="10,0,0,0" 
+                                Click="SearchButton_Click"/>
+                        <Button Content="Сбросить" Style="{StaticResource SecondaryButton}" Margin="10,0,0,0" 
+                                Click="ResetSearchButton_Click"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Добавить прием" Style="{StaticResource ActionButton}" Margin="10,0,0,0"
+                             Click="AddAppointment_Click"/>
+                        <Button x:Name="EditButton" Content="Редактировать" Style="{StaticResource SecondaryButton}" Margin="10,0,0,0"
+                             Click="EditAppointment_Click" IsEnabled="False"/>
+                    </StackPanel>
+                </Grid>
             </Border>
         </StackPanel>
 
+    
+        
+
         <!-- Tab Control -->
-        <TabControl Grid.Row="1" Margin="20,0,20,20">
-            <!-- Прошедшие приемы -->
-            <TabItem Header="Приемы">
+        <TabControl Grid.Row="2" Margin="20,0,20,20">
+            <!-- Сегодняшние приемы -->
+            <TabItem Header="Сегодня">
                 <Border Background="White" CornerRadius="5" BorderBrush="#FFDDDDDD" BorderThickness="1">
-                    <DataGrid x:Name="PastAppointmentsGrid" Style="{StaticResource DataGridStyle}"
+                    <DataGrid x:Name="TodayAppointmentsGrid" Style="{StaticResource DataGridStyle}"
                               ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
-                              AutoGenerateColumns="False" SelectionMode="Single">
+                              AutoGenerateColumns="False" SelectionMode="Single"
+                              SelectionChanged="AppointmentsGrid_SelectionChanged">     
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding AppointmentId}" Width="Auto"/>
                             <DataGridTextColumn Header="Пациент" Binding="{Binding PatientName}" Width="*"/>
                             <DataGridTextColumn Header="Врач" Binding="{Binding DoctorName}" Width="*"/>
-                            <DataGridTextColumn Header="Дата приема" Binding="{Binding AppointmentDate, StringFormat=dd.MM.yyyy HH:mm}" Width="Auto"/>
+                            <DataGridTextColumn Header="Время приема" Binding="{Binding AppointmentDate, StringFormat=HH:mm}" Width="Auto"/>
                             <DataGridTemplateColumn Header="Больничный лист" Width="Auto">
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
@@ -51,11 +75,31 @@
                 <Border Background="White" CornerRadius="5" BorderBrush="#FFDDDDDD" BorderThickness="1">
                     <DataGrid x:Name="UpcomingAppointmentsGrid" Style="{StaticResource DataGridStyle}"
                               ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
-                              AutoGenerateColumns="False" SelectionMode="Single">
+                              AutoGenerateColumns="False" SelectionMode="Single"
+                              SelectionChanged="AppointmentsGrid_SelectionChanged"> 
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding AppointmentId}" Width="Auto"/>
                             <DataGridTextColumn Header="Пациент" Binding="{Binding PatientName}" Width="*"/>
                             <DataGridTextColumn Header="Дата приема" Binding="{Binding AppointmentDate, StringFormat=dd.MM.yyyy HH:mm}" Width="Auto"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </TabItem>
+
+            <!-- Прошедшие приемы -->
+            <TabItem Header="Прошедшие">
+                <Border Background="White" CornerRadius="5" BorderBrush="#FFDDDDDD" BorderThickness="1">
+                    <DataGrid x:Name="PastAppointmentsGrid" Style="{StaticResource DataGridStyle}"
+                         ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
+                         AutoGenerateColumns="False" SelectionMode="Single"
+                         SelectionChanged="AppointmentsGrid_SelectionChanged"> 
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding AppointmentId}" Width="Auto"/>
+                            <DataGridTextColumn Header="Пациент" Binding="{Binding PatientName}" Width="*"/>
+                            <DataGridTextColumn Header="Врач" Binding="{Binding DoctorName}" Width="*"/>
+                            <DataGridTextColumn Header="Дата приема" Binding="{Binding AppointmentDate, StringFormat=dd.MM.yyyy HH:mm}" Width="Auto"/>
+                            <DataGridTemplateColumn Header="Больничный лист" Width="Auto">
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>

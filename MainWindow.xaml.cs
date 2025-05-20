@@ -70,20 +70,20 @@ namespace MedicalSystem
             {
                 foreach (var child in navStack.Children)
                 {
-                    if (child is Button button && button.Content is StackPanel buttonContent)
+                    if (child is Button button)
                     {
-                        // Настраиваем видимость текста
-                        foreach (var contentChild in buttonContent.Children)
+                        // Для Grid внутри кнопки
+                        if (button.Content is Grid grid && grid.Children.Count > 1)
                         {
-                            if (contentChild is TextBlock textBlock)
+                            // Второй элемент Grid - это TextBlock
+                            if (grid.Children[1] is TextBlock textBlock)
                             {
                                 textBlock.Visibility = isCollapsed ? Visibility.Collapsed : Visibility.Visible;
                             }
                         }
 
-                        // Настраиваем выравнивание и отступы
+                        // Центрируем содержимое при скрытом состоянии
                         button.HorizontalContentAlignment = isCollapsed ? HorizontalAlignment.Center : HorizontalAlignment.Left;
-                        button.Padding = isCollapsed ? new Thickness(10, 5, 10, 5) : new Thickness(15, 5, 5, 5);
                     }
                 }
             }

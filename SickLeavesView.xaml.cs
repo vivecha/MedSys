@@ -26,7 +26,7 @@ namespace MedicalSystem.Views
                     string baseQuery = @"SELECT sl.sick_leave_id, 
                                    CONCAT(p.last_name, ' ', p.first_name, ' ', IFNULL(p.middle_name, '')) as patient_name,
                                    CONCAT(e.last_name, ' ', e.first_name, ' ', IFNULL(e.middle_name, '')) as doctor_name,
-                                   sl.issue_date, sl.start_date, sl.end_date, sl.closed_date,
+                                   sl.start_date, sl.end_date, sl.closed_date,
                                    CASE WHEN sl.closed_date IS NULL THEN 'Активный' ELSE 'Закрытый' END as status
                                    FROM sickleaves sl
                                    JOIN patients p ON sl.patient_id = p.patient_id
@@ -48,7 +48,6 @@ namespace MedicalSystem.Views
                                     SickLeaveId = reader.GetInt32("sick_leave_id"),
                                     PatientName = reader.GetString("patient_name"),
                                     DoctorName = reader.GetString("doctor_name"),
-                                    IssueDate = reader.GetDateTime("issue_date"),
                                     StartDate = reader.GetDateTime("start_date"),
                                     EndDate = reader.GetDateTime("end_date"),
                                     Status = reader.GetString("status")

@@ -22,20 +22,16 @@ namespace MedicalSystem.Views
             {
                 using (var connection = DatabaseHelper.GetConnection())
                 {
-                    // Загрузка количества пациентов
                     string patientsQuery = "SELECT COUNT(*) FROM patients";
                     PatientsCount.Text = ExecuteScalarQuery(connection, patientsQuery).ToString();
 
-                    // Загрузка количества врачей
                     string doctorsQuery = "SELECT COUNT(*) FROM doctors";
                     DoctorsCount.Text = ExecuteScalarQuery(connection, doctorsQuery).ToString();
 
-                    // Загрузка количества приемов на сегодня
                     string appointmentsQuery = @"SELECT COUNT(*) FROM appointments 
                                               WHERE DATE(appointment_date) = CURDATE()";
                     AppointmentsCount.Text = ExecuteScalarQuery(connection, appointmentsQuery).ToString();
 
-                    // Загрузка количества активных больничных
                     string sickLeavesQuery = "SELECT COUNT(*) FROM sickleaves WHERE closed_date IS NULL";
                     SickLeavesCount.Text = ExecuteScalarQuery(connection, sickLeavesQuery).ToString();
                 }
@@ -62,7 +58,7 @@ namespace MedicalSystem.Views
                                     JOIN users u ON d.user_id = u.user_id
                                     JOIN employees e ON u.employee_id = e.employee_id
                                     WHERE sl.closed_date IS NULL
-                                    ORDER BY sl.issue_date DESC
+                                    ORDER BY sl.start_date DESC
                                     LIMIT 10";
 
                     var sickLeaves = new System.Collections.ObjectModel.ObservableCollection<dynamic>();
@@ -130,19 +126,19 @@ namespace MedicalSystem.Views
         private void CreateSickLeave_Click(object sender, RoutedEventArgs e)
         {
             var mainWindow = Window.GetWindow(this) as MainWindow;
-            mainWindow?.NavigateToView("SickLeavesView");
+            mainWindow?.NavigateToView("SickLeavesFormView");
         }
 
         private void RegisterPatient_Click(object sender, RoutedEventArgs e)
         {
             var mainWindow = Window.GetWindow(this) as MainWindow;
-            mainWindow?.NavigateToView("PatientsView");
+            mainWindow?.NavigateToView("AddPatientWindow");
         }
 
         private void ScheduleAppointment_Click(object sender, RoutedEventArgs e)
         {
             var mainWindow = Window.GetWindow(this) as MainWindow;
-            mainWindow?.NavigateToView("AppointmentsView");
+            mainWindow?.NavigateToView("EditAppointmentWindow");
         }
     }
 }

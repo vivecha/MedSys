@@ -4,13 +4,13 @@
         Title="Вход в систему" Height="250" Width="400" ResizeMode="NoResize">
     <Grid Margin="20">
         <StackPanel>
-            <TextBlock Text="Логин:" Margin="0 0 0 5"/>
+            <TextBlock Text="Логин:" Style="{StaticResource FormLabel}" Margin="0 0 0 5"/>
             <TextBox x:Name="txtUsername" Margin="0 0 0 10"/>
 
-            <TextBlock Text="Пароль:" Margin="0 0 0 5"/>
+            <TextBlock Text="Пароль:" Style="{StaticResource FormLabel}" Margin="0 0 0 5"/>
             <PasswordBox x:Name="txtPassword" Margin="0 0 0 20"/>
 
-            <Button x:Name="btnLogin" Content="Войти" Height="30" Click="BtnLogin_Click"/>
+            <Button x:Name="btnLogin" Content="Войти" Height="30" Style="{StaticResource ActionButton}" Click="BtnLogin_Click"/>
 
             <TextBlock x:Name="txtError" Foreground="Red" Margin="0 10 0 0" TextWrapping="Wrap"/>
         </StackPanel>

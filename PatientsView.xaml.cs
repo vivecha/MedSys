@@ -64,7 +64,23 @@ namespace MedicalSystem.Views
             {
                 using (var connection = DatabaseHelper.GetConnection())
                 {
-                    string query = "SELECT * FROM patients";
+                    string query = @"
+                                    SELECT 
+                                        patient_id,
+                                        first_name,
+                                        last_name,
+                                        middle_name,
+                                        date_of_birth,
+                                        CASE 
+                                            WHEN gender = 'Male' THEN 'Мужской'
+                                            WHEN gender = 'Female' THEN 'Женский'
+                                            ELSE gender
+                                        END AS gender,
+                                        address,
+                                        phone_number,
+                                        email
+                                    FROM 
+                                        patients";
                     using (var command = new MySqlCommand(query, connection))
                     {
                         PatientsGrid.ItemsSource = ExecutePatientQuery(command);
