@@ -28,7 +28,7 @@ namespace MedicalSystem.Views
             {
                 using (var connection = DatabaseHelper.GetConnection())
                 {
-                    // Загрузка прошедших приемов (без изменений)
+                    // Загрузка прошедших приемов
                     string pastQuery = @"SELECT a.appointment_id, a.appointment_date, 
                                CONCAT(p.last_name, ' ', LEFT(p.first_name, 1), '. ', LEFT(p.middle_name, 1), '.') as patient_name,
                                CONCAT(e.last_name, ' ', LEFT(e.first_name, 1), '. ', LEFT(e.middle_name, 1), '.') as doctor_name,
@@ -39,7 +39,7 @@ namespace MedicalSystem.Views
                                JOIN users u on d.user_id = u.user_id
                                JOIN employees e ON u.employee_id = e.employee_id
                                LEFT JOIN sickleaves sl ON a.appointment_id = sl.appointment_id
-                               WHERE a.appointment_date < CURDATE()
+                               WHERE DATE(a.appointment_date) < CURDATE()
                                ORDER BY a.appointment_date DESC";
 
                     _allPastAppointments.Clear();
@@ -63,7 +63,7 @@ namespace MedicalSystem.Views
                     }
                     PastAppointmentsGrid.ItemsSource = _allPastAppointments;
 
-                    // Загрузка сегодняшних приемов (без изменений)
+                    // Загрузка сегодняшних приемов
                     string todayQuery = @"SELECT a.appointment_id, a.appointment_date, 
                                           CONCAT(p.last_name, ' ', LEFT(p.first_name, 1), '. ', LEFT(p.middle_name, 1), '.') as patient_name,
                                           CONCAT(e.last_name, ' ', LEFT(e.first_name, 1), '. ', LEFT(e.middle_name, 1), '.') as doctor_name,
@@ -98,7 +98,7 @@ namespace MedicalSystem.Views
                     }
                     TodayAppointmentsGrid.ItemsSource = _allTodayAppointments;
 
-                    // Загрузка предстоящих приемов (без изменений)
+                    // Загрузка предстоящих приемов
                     string upcomingQuery = @"SELECT a.appointment_id, a.appointment_date,
                                           CONCAT(p.last_name, ' ', LEFT(p.first_name, 1), '. ', LEFT(p.middle_name, 1), '.') as patient_name,
                                           CONCAT(e.last_name, ' ', LEFT(e.first_name, 1), '. ', LEFT(e.middle_name, 1), '.') as doctor_name
@@ -107,7 +107,7 @@ namespace MedicalSystem.Views
                                           JOIN doctors d ON a.doctor_id = d.doctor_id
                                           JOIN users u on d.user_id = u.user_id
                                           JOIN employees e ON u.employee_id = e.employee_id
-                                          WHERE a.appointment_date > CURDATE()
+                                          WHERE DATE(a.appointment_date) > CURDATE()
                                           ORDER BY a.appointment_date";
 
                     _allUpcomingAppointments.Clear();
@@ -153,6 +153,61 @@ namespace MedicalSystem.Views
             {
                 _selectedAppointment = selectedAppointment;
                 EditButton.IsEnabled = true;
+                DeleteButton.IsEnabled = true; 
+            }
+            else
+            {
+                EditButton.IsEnabled = false;
+                DeleteButton.IsEnabled = false; 
+            }
+        }
+
+        private void DeleteAppointment_Click(object sender, RoutedEventArgs e)
+        {
+            if (_selectedAppointment != null)
+            {
+                var result = MessageBox.Show(
+                    $"Вы уверены, что хотите удалить прием?\n\n" +
+                    $"Пациент: {_selectedAppointment.PatientName}\n" +
+                    $"Дата и время: {_selectedAppointment.AppointmentDate:dd.MM.yyyy HH:mm}",
+                    "Подтверждение удаления",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        using (var connection = DatabaseHelper.GetConnection())
+                        {
+                            string query = "DELETE FROM appointments WHERE appointment_id = @appointmentId";
+
+                            using (var command = new MySqlCommand(query, connection))
+                            {
+                                command.Parameters.AddWithValue("@appointmentId", _selectedAppointment.AppointmentId);
+                                command.ExecuteNonQuery();
+                            }
+                        }
+
+                        MessageBox.Show("Прием успешно удален.", "Успех",
+                            MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        LoadAppointments();
+                        _selectedAppointment = null;
+                        EditButton.IsEnabled = false;
+                        DeleteButton.IsEnabled = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Ошибка при удалении приема: {ex.Message}", "Ошибка",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Пожалуйста, выберите прием для удаления.", "Информация",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -162,13 +217,13 @@ namespace MedicalSystem.Views
             {
                 var editWindow = new EditAppointmentWindow(_selectedAppointment.AppointmentId)
                 {
-                    Owner = Window.GetWindow(this) // Устанавливаем владельца для модального окна
+                    Owner = Window.GetWindow(this) 
                 };
 
                 if (editWindow.ShowDialog() == true)
                 {
                     LoadAppointments();
-                    _selectedAppointment = null; // Сбрасываем выбранный элемент
+                    _selectedAppointment = null; 
                     EditButton.IsEnabled = false;
                 }
             }
@@ -196,20 +251,17 @@ namespace MedicalSystem.Views
             string searchText = SearchTextBox.Text.ToLower();
             DateTime? selectedDate = DateFilterPicker.SelectedDate;
 
-            // Filter past appointments
             var filteredPast = _allPastAppointments.FindAll(a =>
                 (string.IsNullOrEmpty(searchText) || a.PatientName.ToLower().Contains(searchText)) &&
                 (!selectedDate.HasValue || a.AppointmentDate.Date == selectedDate.Value.Date));
 
             PastAppointmentsGrid.ItemsSource = filteredPast;
 
-            // Filter today's appointments (only by name, since they're all for today)
             var filteredToday = _allTodayAppointments.FindAll(a =>
                 string.IsNullOrEmpty(searchText) || a.PatientName.ToLower().Contains(searchText));
 
             TodayAppointmentsGrid.ItemsSource = filteredToday;
 
-            // Filter upcoming appointments
             var filteredUpcoming = _allUpcomingAppointments.FindAll(a =>
                 (string.IsNullOrEmpty(searchText) || a.PatientName.ToLower().Contains(searchText)) &&
                 (!selectedDate.HasValue || a.AppointmentDate.Date == selectedDate.Value.Date));

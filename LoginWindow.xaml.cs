@@ -10,6 +10,7 @@ namespace MedicalSystem
         public LoginWindow()
         {
             InitializeComponent();
+
         }
 
         private void BtnLogin_Click(object sender, RoutedEventArgs e)
@@ -38,7 +39,7 @@ namespace MedicalSystem
 
                         if (count > 0)
                         {
-                            MainWindow mainWindow = new MainWindow();
+                            MainWindow mainWindow = new MainWindow(username);
                             mainWindow.Show();
                             this.Close();
                         }

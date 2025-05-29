@@ -14,13 +14,20 @@ namespace MedicalSystem
 {
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private string _username;
+        public MainWindow(string username)
         {
             InitializeComponent();
+            _username = username;
             InitializeNavigation();
             InitializeDateTime();
+            UpdateUser();
         }
 
+        private void UpdateUser()
+        {
+            UserInfoText.Text = $"Пользователь: {_username}";
+        }
 
         private void InitializeNavigation()
         {
@@ -72,17 +79,15 @@ namespace MedicalSystem
                 {
                     if (child is Button button)
                     {
-                        // Для Grid внутри кнопки
                         if (button.Content is Grid grid && grid.Children.Count > 1)
                         {
-                            // Второй элемент Grid - это TextBlock
+                            
                             if (grid.Children[1] is TextBlock textBlock)
                             {
                                 textBlock.Visibility = isCollapsed ? Visibility.Collapsed : Visibility.Visible;
                             }
                         }
 
-                        // Центрируем содержимое при скрытом состоянии
                         button.HorizontalContentAlignment = isCollapsed ? HorizontalAlignment.Center : HorizontalAlignment.Left;
                     }
                 }

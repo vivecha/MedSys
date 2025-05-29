@@ -102,7 +102,7 @@
 
             <!-- Центральная часть -->
             <StatusBarItem>
-                <TextBlock x:Name="UserInfoText" Text="Пользователь: " VerticalAlignment="Center"/>
+                <TextBlock x:Name="UserInfoText" VerticalAlignment="Center"/>
             </StatusBarItem>
             <Separator/>
 
